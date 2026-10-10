@@ -18,3 +18,28 @@ export interface IssueDTO{
     userId:string,
     taggedEntity?:taggedEntityinterface
 }
+
+export interface INearbyDuplicate {
+    category: string,
+    longitude: number, 
+    latitude: number, 
+    maxDistance: number
+}
+
+
+export interface IFindByWard{
+    wardId:string,
+    status?:StatusEnum
+}
+
+export interface IUpdateStatus{
+    id:string,
+    status:StatusEnum
+}
+
+
+export enum StatusEnum{
+    SUBMITTED='Submitted',
+    IN_PROGRESS='In Progress',
+    RESOLVED='Resolved'
+}
