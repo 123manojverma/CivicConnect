@@ -1,14 +1,14 @@
-enum  tags{
+export enum tags{
    Government="Government",
    NGO="NGO"
 }
 
-interface taggedEntityinterface{
+export interface taggedEntityinterface{
     type:tags
     id:string
 }
 
-interface IssueDTO{
+export interface IssueDTO{
     title:string,
     description:string,
     category:string,
