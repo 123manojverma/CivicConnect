@@ -2,8 +2,9 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import logger from "../config/logger.config";
 import { DuplicateError, InternalServerError } from "../utils/errors/app.error";
-import { createIssueService, getNgoIssuesService, getWardIssuesService, updateIssueStatusService, upvoteIssueService } from "../services/issue.service";
+import { createIssueService, getNgoIssuesService, getWardIssuesService, updateIssueStatusService, upvoteIssueService, govMarkCompleteService, voteCompletionService, getIssueByIdService } from "../services/issue.service";
 import { StatusEnum } from "../dto/Issuedto";
+import { AuthenticatedRequest } from "../middlewares/authMiddleware";
 
 export const createIssueHandler = async(req:Request,res:Response)=>{
   try {
@@ -82,3 +83,36 @@ export const updateIssueStatusHandler = async (req: Request, res: Response) => {
     throw new InternalServerError("Internal Server Error")
   }
 };
+
+export const govMarkCompleteHandler = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { completionImage } = req.body;
+    const issue = await govMarkCompleteService(id, completionImage || '');
+    res.status(StatusCodes.OK).json({ success: true, message: 'Marked as complete, community verification triggered', issue });
+  } catch (error: any) {
+    throw new InternalServerError(error.message || 'Failed to mark complete');
+  }
+};
+
+export const voteCompletionHandler = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { approved } = req.body;
+    const userId = req.user!.id;
+    const issue = await voteCompletionService(id, userId, approved);
+    res.status(StatusCodes.OK).json({ success: true, message: 'Vote recorded', issue });
+  } catch (error: any) {
+    throw new InternalServerError(error.message || 'Failed to vote');
+  }
+};
+
+export const getIssueByIdHandler = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const issue = await getIssueByIdService(id);
+    res.status(StatusCodes.OK).json({ success: true, data: issue });
+  } catch (error: any) {
+    throw new InternalServerError('Issue not found');
+  }
+};

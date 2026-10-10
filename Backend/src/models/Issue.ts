@@ -13,8 +13,13 @@ export interface IIssue extends Document{
     taggedEntity?:{type: 'Government' | 'NGO'; id:string};
     upvotes:number;
     upvotedBy:string[];
+    reportedBy:string;
+    images:string[];
+    completionImage?:string;
+    completionVotes:{userId:string; approved:boolean}[];
+    govMarkedComplete:boolean;
+    govMarkedAt?:Date;
     createdAt:Date;
-
 }
 
 const IssueSchema = new Schema<IIssue>({
@@ -66,6 +71,28 @@ const IssueSchema = new Schema<IIssue>({
     upvotedBy:{
         type:[String], 
         default:[]
+    },
+    reportedBy:{
+        type:String,
+        required:true
+    },
+    images:{
+        type:[String],
+        default:[]
+    },
+    completionImage:{
+        type:String
+    },
+    completionVotes:{
+        type:[{userId:{type:String},approved:{type:Boolean}}],
+        default:[]
+    },
+    govMarkedComplete:{
+        type:Boolean,
+        default:false
+    },
+    govMarkedAt:{
+        type:Date
     },
     createdAt:{
         type:Date, 

@@ -6,31 +6,39 @@ export interface AuthenticatedRequest extends Request{
     user?:{id:string,role:string,wardId?:string};
 }
 
-export function authenticateToken(req:AuthenticatedRequest,res:Response,next:NextFunction){
-    const token=req.cookies.token?.split(' ')[1];
+export function authenticateToken(req:Request,res:Response,next:NextFunction):void{
+    const authReq = req as AuthenticatedRequest;
+    const authHeader = req.headers['authorization'];
+    let token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+    if (!token) {
+        token = (req as any).cookies?.token?.split(' ')[1] || null;
+    }
     if(!token){
-        return res.status(401).json({
+        res.status(401).json({
             message:'Access Denied: No Token Provided'
         });
+        return;
     }
 
     try{
         const verified=jwt.verify(token,serverConfig.JWT_SECRET) as any;
-        req.user=verified;
+        authReq.user=verified;
         next();
     }catch(err){
         res.status(403).json({
             message:'Invalid Token'
-        })
+        });
     }
 };
 
 export function requireRole(...roles:string[]){
-    return (req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
-        if(!req.user || !roles.includes(req.user.role)){
-            return res.status(403).json({
+    return (req:Request,res:Response,next:NextFunction):void=>{
+        const authReq = req as AuthenticatedRequest;
+        if(!authReq.user || !roles.includes(authReq.user.role)){
+            res.status(403).json({
                 message:'Forbidden: Insufficient permissions'
-            })
+            });
+            return;
         }
         next();
     }
