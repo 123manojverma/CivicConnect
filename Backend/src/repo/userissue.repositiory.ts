@@ -1,10 +1,13 @@
 import logger from "../config/logger.config";
+import { IssueDTO } from "../dto/Issuedto";
+import { Issue } from "../models/Issue";
 import { DuplicateError } from "../utils/errors/app.error";
 
 export async function createIssue(data:IssueDTO){
+  const {title,description,category,longitude,latitude,wardId,userId,taggedEntity} = data
   //Duplication Check
   const duplicate = await Issue.findOne({
-    category,
+    data:category,
     status:{$ne:'Resolved'},
     location:{
       $near:{
@@ -22,6 +25,15 @@ export async function createIssue(data:IssueDTO){
   const newIssue = new Issue({
     title,
     description,
+    category,
+    location:{type:"Point",coordinates:[longitude,latitude]},
+    wardId,
+    taggedEntity,
+    upvotedBy:[userId],
+    upvotes:1
   })
+
+  await newIssue.save()
+  return newIssue 
 }
 
