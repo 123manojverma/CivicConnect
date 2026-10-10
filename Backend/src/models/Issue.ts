@@ -18,22 +18,59 @@ export interface IIssue extends Document{
 }
 
 const IssueSchema = new Schema<IIssue>({
-    title:{type:String, required:true},
-    description:{type:String, required:true},
-    category:{type:String, required:true},
-    status:{type:String, enum:['Submitted' , 'In Progress' , 'Resolved'], default: 'Submitted'},
+    title:{
+        type:String,
+        required:true
+    },
+    description:{
+        type:String, 
+        required:true
+    },
+    category:{
+        type:String, 
+        required:true},
+    status:{
+        type:String, 
+        enum:['Submitted' , 'In Progress' , 'Resolved'], 
+        default: 'Submitted'
+    },
     location:{
-        type:{type:String, enum:['Point'], required:true, default:'Point'},
-        coordinates:{type:[Number], required:true}
+        type:{
+            type:String, 
+            enum:['Point'], 
+            required:true, 
+            default:'Point'
+        },
+        coordinates:{
+            type:[Number], 
+            required:true
+        }
     },
-    wardId:{type:String,required:true},
+    wardId:{
+        type:String,
+        required:true
+    },
     taggedEntity:{
-        type:{type:String, enum:['Government', 'NGO']},
-        id:{type:String}
+        type:{
+            type:String, 
+            enum:['Government', 'NGO']
+        },
+        id:{
+            type:String
+        }
     },
-    upvotes:{type:Number, default:1},
-    upvotedBy:{type:[String], default:[]},
-    createdAt:{type:Date, default:Date.now}
+    upvotes:{
+        type:Number, 
+        default:1
+    },
+    upvotedBy:{
+        type:[String], 
+        default:[]
+    },
+    createdAt:{
+        type:Date, 
+        default:Date.now
+    }
 });
 
 IssueSchema.index({location:'2dsphere'});
