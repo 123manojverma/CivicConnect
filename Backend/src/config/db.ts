@@ -1,6 +1,13 @@
 import mongoose from "mongoose";
 import { serverConfig } from ".";
+import dns from "node:dns";
 
+// Fix for querySrv ECONNREFUSED when resolving MongoDB Atlas SRV records
+try {
+    dns.setServers(["8.8.8.8", "8.8.4.4"]);
+} catch (e) {
+    console.warn("Could not set custom DNS servers:", e);
+}
 
 
 export async function dbConnect() {
