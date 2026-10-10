@@ -4,9 +4,16 @@ export interface IUser extends Document {
     name: string;
     email: string;
     passwordHash: string;
-    role: 'Citezen' | 'Government' | 'NGO';
+    role: 'Citizen' | 'Government' | 'NGO';
     wardId?: string;
     organizationName?: string;
+    phone?: string;
+    avatar?: string;
+    location?: {
+        type: 'Point';
+        coordinates: [number, number];
+    };
+    categories?: string[];
 }
 
 const UserSchema=new Schema<IUser>({
@@ -33,7 +40,28 @@ const UserSchema=new Schema<IUser>({
     },
     organizationName:{
         type:String
+    },
+    phone:{
+        type:String
+    },
+    avatar:{
+        type:String
+    },
+    location:{
+        type:{
+            type:String,
+            enum:['Point']
+        },
+        coordinates:{
+            type:[Number]
+        }
+    },
+    categories:{
+        type:[String],
+        default:[]
     }
 });
 
-export const User=model<IUser>('User',UserSchema);
+UserSchema.index({ location: '2dsphere' });
+
+export const User=model<IUser>('User',UserSchema);

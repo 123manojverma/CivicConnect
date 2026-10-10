@@ -1,22 +1,16 @@
 import { Router } from "express";
-import { createIssueHandler, getNGOIssuesHandler, getWardIssuesHandler, updateIssueStatusHandler, upvoteIssueHandler } from "../../controllers/issue.controller";
-
+import { createIssueHandler, getNGOIssuesHandler, getWardIssuesHandler, updateIssueStatusHandler, upvoteIssueHandler, govMarkCompleteHandler, voteCompletionHandler, getIssueByIdHandler } from "../../controllers/issue.controller";
+import { authenticateToken } from "../../middlewares/authMiddleware";
 
 const router = Router();
 
-// POST /api/issues
-router.post('/create', createIssueHandler);
-
-// PATCH /api/issues/:id/upvote
-router.patch('/:id/upvote', upvoteIssueHandler);
-
-// GET /api/issues/ward/:wardId?status=In Progress
+router.post('/create', authenticateToken, createIssueHandler);
+router.get('/:id', getIssueByIdHandler);
+router.patch('/:id/upvote', authenticateToken, upvoteIssueHandler);
 router.get('/ward/:wardId', getWardIssuesHandler);
-
-// GET /api/issues/ngo/:ngoId
 router.get('/ngo/:ngoId', getNGOIssuesHandler);
+router.patch('/:id/status', authenticateToken, updateIssueStatusHandler);
+router.patch('/:id/gov-complete', authenticateToken, govMarkCompleteHandler);
+router.post('/:id/vote-completion', authenticateToken, voteCompletionHandler);
 
-// PATCH /api/issues/:id/status
-router.patch('/:id/status', updateIssueStatusHandler);
-
-export default router;
+export default router;
