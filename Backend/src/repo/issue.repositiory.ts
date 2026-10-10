@@ -18,6 +18,8 @@ export class IssueRepository {
 
     async create(issueData:Partial<IIssue>){
         const newIsssue=new Issue(issueData);
+        console.log(newIsssue);
+        
         return await newIsssue.save();
     }
 
@@ -51,6 +53,17 @@ export class IssueRepository {
             {new:true,runValidators:true}
         );
     }
+
+async upvote(id: string, userId: string) {
+  return await Issue.findByIdAndUpdate(
+    id,
+    { 
+      $addToSet: { upvotedBy: userId }, 
+      $inc: { upvotes: 1 }              
+    },
+    { new: true } 
+  );
+}
 }
 
 export const issueRepository=new IssueRepository();

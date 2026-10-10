@@ -6,6 +6,8 @@ import { DuplicateError } from "../utils/errors/app.error";
 
 
 export async function createIssueService(data:IssueDTO) {
+   console.log(1);
+   
     const {title, description, category, longitude, latitude, wardId, userId, taggedEntity} = data;
     
     const duplicate = await issueRepository.findNearbyDuplicate({
@@ -14,6 +16,8 @@ export async function createIssueService(data:IssueDTO) {
         latitude,
         maxDistance:50
     });
+    console.log(duplicate);
+    
 
      if(duplicate){
         logger.error(`Duplicate issue found: ${duplicate._id}`)
@@ -46,7 +50,7 @@ export async function upvoteIssueService(issueId: string, userId: string) {
   return await issueRepository.save(issue);
 }
 
-export async function getWardIssuesService(wardId:string, status?:StatusEnum){
+export async function getWardIssuesService(wardId:string, status?:StatusEnum | undefined){
     return await issueRepository.findByWard({wardId, status});
 }
 
@@ -59,14 +63,12 @@ export async function updateIssueStatusService(issueId:string, status:StatusEnum
 
      if(!allowedStatuses.includes(status)){
         throw new Error(`Invalid status. Allowed values are: ${allowedStatuses.join(', ')}`);
-     
-
+     }
      const updateIssue = await issueRepository.updateStatus({id:issueId, status});
 
      if(!updateIssue){
         throw new Error('Issue not found')
      }
      return updateIssue;
-}
 }
 
