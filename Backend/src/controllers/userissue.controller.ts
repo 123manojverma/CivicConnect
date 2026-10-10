@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { InternalServerError } from "../utils/errors/app.error";
 import { StatusCodes } from "http-status-codes";
-import { createIssueService } from "../services/issue.service";
+import { createIssueService } from "../services/userissue.service";
 
 
 export async function createIssueHandler(req:Request,res:Response,next:NextFunction){

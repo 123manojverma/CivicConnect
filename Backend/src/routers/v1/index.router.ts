@@ -1,6 +1,6 @@
 import express from 'express';
 import pingRouter from './ping.router';
-import issueRouter from './issueRoutes';
+import issueRouter from './issue.route';
 
 const v1Router = express.Router();
 
