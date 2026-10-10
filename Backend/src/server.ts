@@ -9,6 +9,7 @@ import { attachCorrelationIdMiddleware } from './middlewares/correlation.middlew
 import { dbConnect } from './config/db';
 const app = express();
 
+
 app.use(express.json());
 app.use(cookieParser())
 /**
