@@ -141,3 +141,14 @@ export class NotImplementedError implements AppError {
         this.name = "NotImplementedError";
     }
 }
+
+export class DuplicateError implements AppError{
+    statusCode: number;
+    message: string;
+    name: string;
+    constructor(message:string){
+        this.statusCode = 409
+        this.message = message
+        this.name = "DuplicateError" 
+    }
+}
