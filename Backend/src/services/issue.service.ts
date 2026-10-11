@@ -32,6 +32,7 @@ export async function createIssueService(data:IssueDTO) {
         location:{type:'Point', coordinates:[longitude, latitude]},
         wardId,
         taggedEntity,
+        reportedBy:userId,
         upvotedBy:[userId],
         upvotes:1
      });

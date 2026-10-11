@@ -2,6 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import { AppError } from "../utils/errors/app.error";
 
 export const appErrorHandler = (err: AppError, req: Request, res: Response, next: NextFunction) => {
+    if (!Number.isInteger(err.statusCode) || err.statusCode < 400 || err.statusCode > 599) {
+        next(err);
+        return;
+    }
 
     console.log(err);
 
@@ -12,7 +16,8 @@ export const appErrorHandler = (err: AppError, req: Request, res: Response, next
 }
 
 export const genericErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.log(err);
+    const safeMessage = err.message.replace(/Unknown API key\s+\S+/i, 'Unknown API key [redacted]');
+    console.error('Unhandled request error:', err.name, safeMessage);
 
     res.status(500).json({
         success: false,

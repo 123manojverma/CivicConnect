@@ -8,12 +8,17 @@ cloudinary.config({
 });
 
 export async function uploadImageService(fileBuffer: Buffer, folder: string = 'civicconnect'): Promise<string> {
+    if (!serverConfig.CLOUDINARY_CLOUD_NAME || !serverConfig.CLOUDINARY_API_KEY || !serverConfig.CLOUDINARY_API_SECRET) {
+        throw new Error('Cloudinary is not configured. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET.');
+    }
+
     return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
             { folder, resource_type: 'image' },
             (error, result) => {
                 if (error) return reject(error);
-                resolve(result!.secure_url);
+                if (!result?.secure_url) return reject(new Error('Cloudinary upload completed without returning an image URL.'));
+                resolve(result.secure_url);
             }
         );
         stream.end(fileBuffer);

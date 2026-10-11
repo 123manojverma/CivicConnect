@@ -1,14 +1,19 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import logger from "../config/logger.config";
-import { DuplicateError, InternalServerError } from "../utils/errors/app.error";
+import { DuplicateError, InternalServerError, UnauthorizedError } from "../utils/errors/app.error";
 import { createIssueService, getNgoIssuesService, getWardIssuesService, updateIssueStatusService, upvoteIssueService, govMarkCompleteService, voteCompletionService, getIssueByIdService } from "../services/issue.service";
 import { StatusEnum } from "../dto/Issuedto";
 import { AuthenticatedRequest } from "../middlewares/authMiddleware";
 
-export const createIssueHandler = async(req:Request,res:Response)=>{
+export const createIssueHandler = async(req:AuthenticatedRequest,res:Response)=>{
   try {
-    const issue = await createIssueService(req.body);
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new UnauthorizedError("Authenticated user ID is missing");
+    }
+
+    const issue = await createIssueService({ ...req.body, userId });
     res.status(StatusCodes.CREATED).json({
       message:`Issue Created Successfully`,
       success:true,
@@ -16,10 +21,10 @@ export const createIssueHandler = async(req:Request,res:Response)=>{
     })
   } catch (error) {
     if (error instanceof DuplicateError) {
-      throw new DuplicateError(`Duplicate Request`)
+      throw error;
     }
     logger.error("Internal Server Error: ",error)
-    throw new InternalServerError("Internal Server Error")
+    throw error;
   }
 }
 
